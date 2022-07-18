@@ -1,20 +1,15 @@
-(function() {
-	function generateHash() {
-		// fetch master password and then clear field
-		var seed = $("#seed").val();
-		var keyword = $("#keyword").val();
+document.getElementsByTagName("form")[0].addEventListener("submit", function(e) {
+	// fetch master password and then clear field
+	var seed = document.getElementById("seed").value;
+	var keyword = document.getElementById("keyword").value;
 
-		// clear the seed each time a hash is generated
-		$("#seed").val("");
+	// clear the seed each time a hash is generated
+	document.getElementById("seed").value = "";
 
-		var hashpass = b64_hmac_sha1(seed, keyword).substr(0,16);
+	var hashpass = b64_hmac_sha1(seed, keyword).substr(0,16);
 
-		$("#result").val(hashpass).select();
+	document.getElementById("result").value = hashpass;
+	document.getElementById("result").select();
 
-		return false;
-	}
-
-	$("form").on("submit", function(e) {
-		return generateHash();
-	});
-}());
+	e.preventDefault();
+});
