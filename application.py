@@ -1,5 +1,5 @@
 # HTTP server and templating
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import http.server
 from jinja2 import Template
 
 # mincss
@@ -48,7 +48,7 @@ def process_css(html, stylesheets):
 	page = tree.getroot()
 
 	if page is None:
-		print repr(html)
+		print(repr(html))
 		raise ParserError("Could not parse the HTML")
 
 	body, = CSSSelector('body')(page)
@@ -87,7 +87,7 @@ def process_images(images):
 	return processed_images
 
 
-class MyRequestHandler(BaseHTTPRequestHandler):
+class MyRequestHandler(http.server.BaseHTTPRequestHandler):
 	def do_GET(self):
 		template_path = normpath(join(PROJECT_ROOT, 'templates/password.html'))
 
@@ -116,7 +116,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
-			self.wfile.write(html)
+			self.wfile.write(bytes(html, 'utf-8'))
 
 			return
 
@@ -126,7 +126,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 			with open(local_path) as static_file:
 				html = static_file.read()
 
-			self.wfile.write(html)
+			self.wfile.write(bytes(html, 'utf-8'))
 			return
 
 		self.send_error(404, "File Not Found %s" % self.path)
@@ -134,7 +134,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
 	try:
-		server = HTTPServer(("0.0.0.0", 9000), MyRequestHandler)
+		server = http.server.HTTPServer(("0.0.0.0", 9000), MyRequestHandler)
 		server.serve_forever()
 	except KeyboardInterrupt:
 		server.socket.close()
